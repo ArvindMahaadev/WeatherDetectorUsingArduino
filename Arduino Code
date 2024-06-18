@@ -1,0 +1,59 @@
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(6, 7, 2, 3, 4, 5);
+int sensorValue, gasValue, seconds, minutes, hours;    
+double temperature; 
+float gasPercentage;
+
+void setup()
+{
+  lcd.begin(16, 2);
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  printTime();
+  printTemp();
+  lcd.print(" ; ");
+  printGas();
+  delay(1000);
+}
+
+void printTime()
+{
+  unsigned long totalSeconds = millis() / 1000;
+  seconds = totalSeconds % 60;
+  totalSeconds /= 60;
+  minutes = totalSeconds % 60;
+  hours = totalSeconds / 60;
+
+  lcd.setCursor(0, 0);
+  if (hours < 10) lcd.print("0");
+  lcd.print(hours);
+  lcd.print(":");
+  if (minutes < 10) lcd.print("0");
+  lcd.print(minutes);
+  lcd.print(":");
+  if (seconds < 10) lcd.print("0");
+  lcd.print(seconds);
+}
+
+void printTemp()
+{
+  sensorValue = analogRead(A0);        
+  temperature = (sensorValue / 1024.0) * 5.0;   
+  temperature = (temperature - 0.5) * 100; 
+  lcd.setCursor(0, 1);
+  lcd.print(temperature);
+  lcd.print((char)176);
+  lcd.print("C");
+}
+
+void printGas()
+{
+  gasValue = analogRead(A1);
+  gasPercentage = (gasValue / 1024.0) * 100;
+  Serial.println(gasValue);
+  lcd.print(gasPercentage);
+  lcd.print("%");
+}
